@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Voice or Text Input</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      padding: 20px;
+      animation: fadeIn 1s ease;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #00ffc3;
+      text-shadow: 0 0 8px #00ffc3;
+    }
+
+    textarea {
+      width: 80%;
+      max-width: 700px;
+      display: block;
+      margin: 10px auto;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #00ffc3;
+      font-size: 16px;
+      resize: vertical;
+      box-shadow: 0 0 8px rgba(0, 255, 195, 0.3);
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    button {
+      display: block;
+      margin: 10px auto;
+      padding: 12px 30px;
+      background-color: #00ffc3;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px #00ffc3;
+    }
+
+    button:hover {
+      background-color: black;
+      color: #00ffc3;
+      box-shadow: 0 0 16px #00ffc3, 0 0 30px #00ffc3;
+    }
+
+    #status, #resultMsg {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    hr {
+      margin: 40px auto;
+      border: none;
+      height: 2px;
+      background-color: #00ffc3;
+      width: 80%;
+      box-shadow: 0 0 5px #00ffc3;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: grey;
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 14px 0;
+      box-shadow: 0 0 10px rgba(0,255,195,0.3);
+      border-bottom: 2px solid #00ffc3;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      font-size: 17px;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .navbar a:hover {
+      color: #00ffc3;
+    }
+
+    .navbar a::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      background: #00ffc3;
+      left: 0;
+      bottom: 4px;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .navbar a:hover::after {
+      width: 100%;
+    }
+
+    .navbar a.active {
+      color: #00ffc3;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ✅ Navbar -->
+  
+
+  <!-- 🎤 Voice Input -->
+  <h2>🎤 IBM STT Voice to Text</h2>
+
+  <button onclick="startVoice()">Start Recording</button>
+  <p id="status">⏹ Idle</p>
+  <textarea id="voiceOutput" rows="5" placeholder="Transcribed voice will appear here..."></textarea>
+  <button onclick="submitVoice()">Submit Voice Input</button>
+
+  <hr>
+
+  <!-- ✍️ Text Input -->
+  <h3>✍️ Or Enter Text Manually</h3>
+  <textarea id="textInput" rows="5" placeholder="Type your symptoms here..."></textarea>
+  <button onclick="submitText()">Submit Text Input</button>
+
+  <p id="resultMsg" style="color: #00ffc3;"></p>
+
+  <!-- JS -->
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const doctorEmail = urlParams.get("doctorEmail");
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    function startVoice() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          mediaRecorder.start();
+          document.getElementById("status").innerText = "🎙 Recording...";
+
+          mediaRecorder.addEventListener("dataavailable", event => {
+            audioChunks.push(event.data);
+          });
+
+          mediaRecorder.addEventListener("stop", () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+            const formData = new FormData();
+            formData.append("audio", audioBlob);
+
+            fetch(`/stt?doctor=${encodeURIComponent(doctorEmail)}`, {
+              method: "POST",
+              body: formData
+            })
+              .then(res => res.json())
+              .then(data => {
+                document.getElementById("voiceOutput").value = data.transcript;
+                document.getElementById("status").innerText = "✅ Transcribed";
+              })
+              .catch(err => {
+                console.error("❌ Error:", err);
+                document.getElementById("status").innerText = "❌ Error occurred";
+              });
+
+            audioChunks = [];
+          });
+
+          setTimeout(() => {
+            mediaRecorder.stop();
+            document.getElementById("status").innerText = "⏹ Stopped";
+          }, 5000);
+        })
+        .catch(err => {
+          console.error("Mic access denied:", err);
+          document.getElementById("status").innerText = "❌ Mic access denied";
+        });
+    }
+
+    function submitVoice() {
+      const text = document.getElementById("voiceOutput").value;
+      if (!text.trim()) return alert("Transcription is empty!");
+
+      fetch("/consult", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symptoms: text, doctorEmail })
+      })
+        .then(res => res.text())
+        .then(msg => {
+          document.getElementById("resultMsg").innerText = "✅ " + msg;
+        })
+        .catch(err => {
+          console.error("Submit failed", err);
+          document.getElementById("resultMsg").innerText = "❌ Submission failed";
+        });
+    }
+
+    function submitText() {
+      const text = document.getElementById("textInput").value;
+      if (!text.trim()) return alert("Text input is empty!");
+
+      fetch("/consult", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symptoms: text, doctorEmail })
+      })
+        .then(res => res.text())
+        .then(msg => {
+          document.getElementById("resultMsg").innerText = "✅ " + msg;
+        })
+        .catch(err => {
+          console.error("Submit failed", err);
+          document.getElementById("resultMsg").innerText = "❌ Submission failed";
+        });
+    }
+  </script>
+</body>
+</html>

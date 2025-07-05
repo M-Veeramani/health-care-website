@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Consultations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f0f4f8;
+    }
+    .container {
+      margin-top: 40px;
+    }
+    .consult-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .respond-btn {
+      background-color: #007e6a;
+      color: white;
+    }
+    .respond-btn:hover {
+      background-color: #005f52;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h3 class="mb-4 text-center">📋 Your Patient Consultations</h3>
+  <button class="btn btn-secondary" onclick="history.back()">⬅️ Back</button>
+  <div id="consultationList"></div>
+</div>
+
+<script>
+  fetch("/consultations")
+    .then(res => {
+      if (res.status === 401) {
+        alert("Session expired. Please login again.");
+        window.location.href = "/doctorlogin.html";
+      }
+      return res.json();
+    })
+    .then(data => {
+      const container = document.getElementById("consultationList");
+      if (data.length === 0) {
+        container.innerHTML = `<div class='alert alert-warning'>No consultations found.</div>`;
+        return;
+      }
+
+      data.forEach(doc => {
+        const card = document.createElement("div");
+        card.className = "consult-card";
+
+        card.innerHTML = `
+          <h5>👤 Patient Email: ${doc.patient_email}</h5>
+          <p><strong>🗒 Symptoms:</strong><br> ${doc.text}</p>
+          <p><small>📅 ${new Date(doc.timestamp).toLocaleString()}</small></p>
+          <button class="btn respond-btn" onclick="respondToPatient('${doc.patient_email}')">Respond</button>
+
+        `;
+
+        container.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.error("Error loading consultations", err);
+      document.getElementById("consultationList").innerHTML =
+        `<div class='alert alert-danger'>Failed to load consultations.</div>`;
+    });
+   
+</script>
+ <script>
+  function respondToPatient(patientEmail) {
+    const url = `respond.html?patientEmail=${encodeURIComponent(patientEmail)}`;
+    window.location.href = url;
+  }
+</script>
+
+</body>
+</html>

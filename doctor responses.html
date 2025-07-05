@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Doctor Responses</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: black;
+    }
+    .container {
+      margin-top: 40px;
+    }
+    .container h3{
+       color:white
+    }
+    .response-card {
+      background: black;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 10px white;
+      margin-bottom: 20px;
+    }
+    .response-card h5 {
+      color: #007e6a;
+    }
+    .response-card p{
+      color:aqua;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h3 class="text-center mb-4">📬 Doctor's Responses</h3><button class="btn btn-secondary" onclick="history.back()">⬅️ Back</button>
+
+    <div id="responseList"></div>
+  </div>
+
+  <script>
+    fetch("/doctor-responses")
+      .then(res => {
+        if (res.status === 401) {
+          alert("Please login to view responses.");
+          window.location.href = "login.html";
+        }
+        return res.json();
+      })
+      .then(data => {
+        const container = document.getElementById("responseList");
+        if (data.length === 0) {
+          container.innerHTML = "<div class='alert alert-warning'>No responses yet.</div>";
+          return;
+        }
+
+        data.forEach(resp => {
+          const card = document.createElement("div");
+          card.className = "response-card";
+          card.innerHTML = `
+            <h5>🧑‍⚕️ Doctor: ${resp.doctor_email}</h5>
+            <p><strong>📝 Response:</strong><br>${resp.response}</p>
+            <p><small>📅 ${new Date(resp.timestamp).toLocaleString()}</small></p>
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading responses:", err);
+        document.getElementById("responseList").innerHTML = "<div class='alert alert-danger'>Error loading responses.</div>";
+      });
+  </script>
+
+</body>
+</html>

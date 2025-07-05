@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat with AI Assistant - HealthCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url("https://cdn.pixabay.com/photo/2018/02/21/15/06/doctor-3164809_1280.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      animation: fadeIn 1s ease;
+    }
+
+    .navbar {
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 10px rgba(0, 255, 224, 0.3);
+      border-bottom: 2px solid #00ffe0;
+    }
+
+    .navbar-brand,
+    .nav-link {
+      color: white !important;
+      position: relative;
+      font-weight: 500;
+    }
+
+    .nav-link:hover,
+    .navbar-brand:hover {
+      color: #00ffe0 !important;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      background: #00ffe0;
+      bottom: 2px;
+      left: 0;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-link.active {
+      color: #00ffe0 !important;
+      font-weight: bold;
+    }
+
+    .chat-container {
+      height: 90vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 15px;
+    }
+
+    .chat-box {
+      width: 100%;
+      max-width: 600px;
+      height: 520px;
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 0 25px #00ffe0;
+      border: 2px solid #00ffe0;
+      backdrop-filter: blur(8px);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ffe0;
+      text-shadow: 0 0 10px #00ffe0;
+    }
+     h4{
+      margin-top: 100px;
+      text-align: center;
+      color: #00ffe0;
+     }
+    #watson-assistant-container {
+      width: 100%;
+      height: calc(100% - 50px);
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    /* Optional: To hide default Watson floating launcher */
+    .WatsonAssistantChatLauncher {
+      display: none !important;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="dashboard.html">🩺 HealthCare</a>
+      <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon text-white"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="about us.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="doctors.html">Consult now</a></li>
+          <li class="nav-item"><a class="nav-link active" href="chat.html">Chat with Assistant</a></li>
+          <li class="nav-item"><a class="nav-link" href="begin.html">logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Chat UI Container -->
+  <div class="chat-container">
+    <div class="chat-box">
+      <h2>Talk to our AI Assistant</h2>
+      <h4>click on the blue icon to chat with ai</h4>
+      <div id="watson-assistant-container"></div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Watsonx Assistant Integration -->
+  <script>
+    window.watsonAssistantChatOptions = {
+      integrationID: "4ec0cc97-1e76-43ce-a640-f463988b0c8f", // ✅ Your Integration ID
+      region: "eu-gb", // ✅ Your region
+      serviceInstanceID: "6ca256f4-f2b1-43e0-af2a-11ea736e98ab", // ✅ Your instance ID
+      onLoad: async (instance) => {
+        await instance.render({
+          container: document.getElementById("watson-assistant-container"), // ✅ Embeds inside chat box
+          hideCloseButton: true
+        });
+      }
+    };
+    setTimeout(() => {
+      const t = document.createElement('script');
+      t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/" +
+              (window.watsonAssistantChatOptions.clientVersion || 'latest') +
+              "/WatsonAssistantChatEntry.js";
+      document.head.appendChild(t);
+    });
+  </script>
+</body>
+</html>

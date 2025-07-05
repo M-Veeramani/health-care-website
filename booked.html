@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Booked Appointments</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #eef2f5;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    .appointment-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h3 class="mb-4 text-center">📅 Your Booked Appointments</h3><button class="btn btn-secondary" onclick="history.back()">⬅️ Back</button>
+
+  <div id="appointmentsList"></div>
+</div>
+
+<script>
+  fetch("/booked-appointments")
+    .then(res => {
+      if (res.status === 401) {
+        alert("Session expired. Please login again.");
+        window.location.href = "/doctorlogin.html";
+      }
+      return res.json();
+    })
+    .then(data => {
+      const container = document.getElementById("appointmentsList");
+      if (data.length === 0) {
+        container.innerHTML = `<div class='alert alert-warning'>No appointments found.</div>`;
+        return;
+      }
+
+      data.forEach(item => {
+  const card = document.createElement("div");
+  card.className = "appointment-card";
+
+  card.innerHTML = `
+    <h5>👤 Patient Email: ${item.PATIENT_EMAIL || item.patient_email}</h5>
+    <p><strong>Doctor:</strong> ${item.DOCTOR_NAME || item.doctor_name}</p>
+    <p><strong>Date:</strong> ${item.APPOINTMENT_DATE || item.appointment_date}</p>
+    <p><small>Booked on: ${new Date(item.CREATED_AT || item.created_at).toLocaleString()}</small></p>
+  `;
+
+  container.appendChild(card);
+});
+
+    })
+    .catch(err => {
+      console.error("Error fetching appointments", err);
+      document.getElementById("appointmentsList").innerHTML =
+        `<div class='alert alert-danger'>Failed to load appointments.</div>`;
+    });
+</script>
+
+</body>
+</html>

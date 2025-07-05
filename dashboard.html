@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Health Care Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: url("https://cdn.pixabay.com/photo/2016/11/29/06/15/doctor-1869320_1280.jpg") no-repeat center center fixed;
+      background-size: cover;
+      color:white;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000;
+    }
+
+    .navbar {
+      background-color: grey;
+      backdrop-filter: blur(8px);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .navbar-brand {
+      color: #00ffc3 !important;
+      font-weight: bold;
+      font-size: 1.8rem;
+      transition: transform 0.3s;
+    }
+
+    .navbar-brand:hover {
+      transform: scale(1.1);
+    }
+
+    .nav-link {
+      color: #ffffff !important;
+      font-weight: 500;
+      position: relative;
+      transition: color 0.3s ease-in-out;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: #00ffc3;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-link:hover {
+      color: #00ffc3 !important;
+    }
+
+    .hero-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: calc(100vh - 80px);
+      text-align: center;
+      animation: fadeInUp 1.2s ease-out;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #ffffff;
+    }
+
+    .btn-consult .btn {
+      margin-top: 20px;
+      margin-right: 15px;
+      border-width: 2px;
+      font-size: 1.1rem;
+      padding: 10px 20px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-outline-light:hover {
+      background-color: #00ffc3;
+      color: #000;
+      box-shadow: 0 0 10px #00ffc3, 0 0 20px #00ffc3;
+    }
+
+    .btn-outline-info:hover {
+      background-color: #17f7e2;
+      color: #000;
+      box-shadow: 0 0 10px #17f7e2, 0 0 20px #17f7e2;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🌐 Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">🩺 HealthCare</a>
+      <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon text-white"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="dashboard.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="about us.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="chat.html">Chat with Assistant</a></li>
+          <li class="nav-item"><a class="nav-link" href="doctors.html">Consult Doctor</a></li>
+          <li class="nav-item"><a class="nav-link text-danger" href="begin.html">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 🩺 Dashboard Body -->
+  <div class="hero-section text-center">
+    <h1>Welcome to Your Health Dashboard</h1>
+    <p>Access care anytime, anywhere.</p>
+    <div class="btn-consult">
+      <a href="doctors.html" class="btn btn-outline-light btn-lg">Consult Doctor</a>
+      <a href="doctor responses.html" class="btn btn-outline-info btn-lg">Doctor's Responses</a>
+    </div>
+  </div>
+
+  <!-- 🧩 Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
